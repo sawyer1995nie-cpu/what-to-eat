@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>今天吃什么</title>
+  <!-- Vercel Analytics -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", sans-serif;
+      background: #0d0d0d;
+      color: #f5f5f7;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 420px;
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100dvh;
+      padding-top: 14vh;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .page.hidden {
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      position: absolute;
+    }
+
+    .time-badge {
+      font-size: 11px;
+      font-weight: 500;
+      color: #636366;
+      letter-spacing: 1.2px;
+      margin-bottom: 8px;
+      align-self: flex-start;
+    }
+
+    h1 {
+      font-size: 30px;
+      font-weight: 580;
+      letter-spacing: -0.8px;
+      margin-bottom: 4px;
+      align-self: flex-start;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #636366;
+      margin-bottom: 44px;
+      align-self: flex-start;
+    }
+
+    /* 情绪网格 — 2列 */
+    .mood-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .mood-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 16px;
+      background: #1c1c1e;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      min-height: 64px;
+    }
+
+    .mood-card:active {
+      transform: scale(0.96);
+      background: #2a2a2d;
+    }
+
+    .mood-card .emoji {
+      font-size: 32px;
+      flex-shrink: 0;
+      transition: transform 0.25s;
+    }
+
+    .mood-card:active .emoji {
+      transform: scale(1.2);
+    }
+
+    .mood-card .label {
+      font-size: 14px;
+      font-weight: 450;
+      color: #d1d1d6;
+      letter-spacing: 0.2px;
+      line-height: 1.3;
+    }
+
+    /* 结果页 */
+    .result-page {
+      padding-top: 22vh;
+    }
+
+    .result-from {
+      font-size: 12px;
+      font-weight: 500;
+      color: #636366;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .result-mood {
+      font-size: 15px;
+      color: #8e8e93;
+      margin-bottom: 32px;
+    }
+
+    .result-emoji {
+      font-size: 80px;
+      margin-bottom: 16px;
+      animation: popIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      65% { transform: scale(1.06); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .result-food {
+      font-size: 34px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .result-tag {
+      font-size: 13px;
+      color: #636366;
+      margin-bottom: 44px;
+    }
+
+    .replay-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      background: #1c1c1e;
+      border: none;
+      border-radius: 100px;
+      color: #8e8e93;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.25s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .replay-btn:active {
+      background: #2a2a2d;
+      color: #f5f5f7;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 24px 0 28px;
+      font-size: 11px;
+      color: #3a3a3c;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 选择页 -->
+  <div class="page" id="selectPage">
+    <div class="time-badge" id="greeting"></div>
+    <h1>今天吃什么</h1>
+    <p class="subtitle">此刻的你，是哪一种心情？</p>
+
+    <div class="mood-grid" id="moodGrid">
+      <div class="mood-card" data-mood="happy">
+        <span class="emoji">😊</span>
+        <span class="label">愉快</span>
+      </div>
+      <div class="mood-card" data-mood="irritated">
+        <span class="emoji">😤</span>
+        <span class="label">烦躁</span>
+      </div>
+      <div class="mood-card" data-mood="indulge">
+        <span class="emoji">🤤</span>
+        <span class="label">想吃爽的</span>
+      </div>
+      <div class="mood-card" data-mood="spicy">
+        <span class="emoji">🌶️</span>
+        <span class="label">想吃有味儿的</span>
+      </div>
+      <div class="mood-card" data-mood="tired">
+        <span class="emoji">😴</span>
+        <span class="label">疲惫</span>
+      </div>
+      <div class="mood-card" data-mood="down">
+        <span class="emoji">😢</span>
+        <span class="label">低落</span>
+      </div>
+      <div class="mood-card" data-mood="chill">
+        <span class="emoji">🧘</span>
+        <span class="label">平静</span>
+      </div>
+      <div class="mood-card" data-mood="random">
+        <span class="emoji">🎲</span>
+        <span class="label">随便，帮我决定</span>
+      </div>
+    </div>
+
+    <footer>eat what your mood tells you</footer>
+  </div>
+
+  <!-- 结果页 -->
+  <div class="page hidden result-page" id="resultPage">
+    <div class="result-from">YOUR PICK</div>
+    <div class="result-mood" id="resultMood"></div>
+    <div class="result-emoji" id="resultEmoji"></div>
+    <div class="result-food" id="resultFood"></div>
+    <div class="result-tag" id="resultTag"></div>
+    <button class="replay-btn" id="replayBtn">
+      <span>↻</span> 再来一次
+    </button>
+    <footer>eat what your mood tells you</footer>
+  </div>
+
+  <script>
+    const foodDB = {
+      happy: {
+        label: '心情愉快',
+        items: [
+          { food: '早午餐拼盘', emoji: '🥞', tag: '今天值得庆祝' },
+          { food: '寿司拼盘', emoji: '🍣', tag: '好心情配好料' },
+          { food: '烤牛排', emoji: '🥩', tag: '犒劳一下自己' },
+          { food: '海鲜拼盘', emoji: '🦞', tag: '鲜甜正好' },
+          { food: '意大利面', emoji: '🍝', tag: '经典不会错' },
+        ]
+      },
+      irritated: {
+        label: '有点烦躁',
+        items: [
+          { food: '麻辣香锅', emoji: '🥘', tag: '辣完就爽了' },
+          { food: '炸鸡', emoji: '🍗', tag: '咬下去就解压' },
+          { food: '烧烤', emoji: '🍖', tag: '没有什么是一顿烧烤解决不了的' },
+          { food: '酸辣粉', emoji: '🌶️', tag: '酸辣出完汗就好了' },
+          { food: '汉堡薯条', emoji: '🍔', tag: '碳水炸弹治愈一切' },
+        ]
+      },
+      indulge: {
+        label: '想吃爽的',
+        items: [
+          { food: '芝士汉堡', emoji: '🍔', tag: '热量算什么' },
+          { food: '烤五花肉', emoji: '🥩', tag: '包生菜一口闷' },
+          { food: '披萨', emoji: '🍕', tag: '双倍芝士拉丝' },
+          { food: '火锅', emoji: '🍲', tag: '毛肚黄喉全都要' },
+          { food: '部队锅', emoji: '🫕', tag: '拉面是灵魂' },
+        ]
+      },
+      spicy: {
+        label: '想吃有味儿的',
+        items: [
+          { food: '水煮鱼', emoji: '🐟', tag: '花椒的麻才够劲' },
+          { food: '螺蛳粉', emoji: '🍜', tag: '勇敢者的游戏' },
+          { food: '川菜小炒', emoji: '🌶️', tag: '锅气十足' },
+          { food: '泰式冬阴功', emoji: '🫕', tag: '酸辣开胃' },
+          { food: '麻辣烫', emoji: '🥘', tag: '自己选的最香' },
+        ]
+      },
+      tired: {
+        label: '好疲惫',
+        items: [
+          { food: '兰州拉面', emoji: '🍜', tag: '热汤回魂' },
+          { food: '咖喱饭', emoji: '🍛', tag: '大口吃满血复活' },
+          { food: '牛丼', emoji: '🍚', tag: '简单直接的能量' },
+          { food: '砂锅粥', emoji: '🥣', tag: '暖到胃里' },
+          { food: '蛋炒饭', emoji: '🍳', tag: '最朴素的慰藉' },
+        ]
+      },
+      down: {
+        label: '有点低落',
+        items: [
+          { food: '提拉米苏', emoji: '🍰', tag: '甜的能救命' },
+          { food: '冰淇淋', emoji: '🍦', tag: '大口吃' },
+          { food: '巧克力', emoji: '🍫', tag: '先吃再说' },
+          { food: '奶茶', emoji: '🧋', tag: '加珍珠加奶盖' },
+          { food: '拉面', emoji: '🍜', tag: '喝完汤就好了' },
+        ]
+      },
+      chill: {
+        label: '心很平静',
+        items: [
+          { food: '牛油果沙拉', emoji: '🥑', tag: '轻盈正好' },
+          { food: '清蒸鲈鱼', emoji: '🐟', tag: '鲜掉眉毛' },
+          { food: '白切鸡', emoji: '🐔', tag: '姜葱是灵魂' },
+          { food: '越南春卷', emoji: '🫔', tag: '蘸鱼露慢慢吃' },
+          { food: '味噌汤定食', emoji: '🍱', tag: '安静吃一顿' },
+        ]
+      },
+      random: {
+        label: '交给命运',
+        items: [
+          { food: '黄焖鸡', emoji: '🍚', tag: '国民第一选择' },
+          { food: '饺子', emoji: '🥟', tag: '好吃不过饺子' },
+          { food: '煎饼果子', emoji: '🫓', tag: '加蛋加薄脆' },
+          { food: '三杯鸡', emoji: '🐔', tag: '九层塔是灵魂' },
+          { food: '三明治', emoji: '🥪', tag: '简单满足' },
+          { food: 'biangbiang面', emoji: '🍝', tag: '油泼辣子滋啦一声' },
+        ]
+      }
+    };
+
+    const lastPicks = {};
+
+    function pickFood(mood) {
+      const pool = foodDB[mood].items;
+      const last = lastPicks[mood];
+      const candidates = pool.filter(i => i.food !== last);
+      const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+      lastPicks[mood] = chosen.food;
+      return chosen;
+    }
+
+    const selectPage = document.getElementById('selectPage');
+    const resultPage = document.getElementById('resultPage');
+
+    function track(name, data) {
+      if (window.va) window.va('event', { name, data });
+    }
+
+    function showResult(mood) {
+      const moodData = foodDB[mood];
+      const pick = pickFood(mood);
+
+      document.getElementById('resultMood').textContent = '/' + moodData.label;
+      document.getElementById('resultEmoji').textContent = pick.emoji;
+      document.getElementById('resultFood').textContent = pick.food;
+      document.getElementById('resultTag').textContent = pick.tag;
+
+      track('mood_select', { mood, food: pick.food });
+
+      selectPage.classList.add('hidden');
+      resultPage.classList.remove('hidden');
+    }
+
+    function backToSelect() {
+      track('replay_click');
+      resultPage.classList.add('hidden');
+      selectPage.classList.remove('hidden');
+    }
+
+    document.querySelectorAll('.mood-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const mood = card.dataset.mood;
+        if (mood) showResult(mood);
+      });
+    });
+
+    document.getElementById('replayBtn').addEventListener('click', backToSelect);
+
+    const hour = new Date().getHours();
+    const g = hour < 10 ? 'GOOD MORNING' : hour < 14 ? 'GOOD AFTERNOON' : hour < 18 ? 'GOOD EVENING' : 'GOOD NIGHT';
+    document.getElementById('greeting').textContent = g;
+
+    track('page_view', { time: new Date().toISOString() });
+  </script>
+</body>
+</html>

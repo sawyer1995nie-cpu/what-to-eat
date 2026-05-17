@@ -18,8 +18,8 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", sans-serif;
-      background: #0d0d0d;
-      color: #f5f5f7;
+      background: #fafaf8;
+      color: #1a1a1a;
       min-height: 100dvh;
       display: flex;
       justify-content: center;
@@ -32,9 +32,8 @@
       padding: 0 24px;
       display: flex;
       flex-direction: column;
-      align-items: center;
       min-height: 100dvh;
-      padding-top: 14vh;
+      padding-top: 12vh;
       transition: opacity 0.35s ease, transform 0.35s ease;
     }
 
@@ -45,86 +44,147 @@
       position: absolute;
     }
 
+    /* ---- 选择页 ---- */
     .time-badge {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
-      color: #636366;
-      letter-spacing: 1.2px;
+      color: #999;
+      letter-spacing: 1.5px;
+      margin-bottom: 28px;
+    }
+
+    .title-line1 {
+      font-size: 36px;
+      font-weight: 300;
+      letter-spacing: 2px;
+      color: #333;
+      line-height: 1.1;
+    }
+
+    .title-line2 {
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+
+    .hero-subtitle {
+      font-size: 15px;
+      color: #888;
       margin-bottom: 8px;
-      align-self: flex-start;
+      letter-spacing: 0.3px;
     }
 
-    h1 {
-      font-size: 30px;
-      font-weight: 580;
-      letter-spacing: -0.8px;
-      margin-bottom: 4px;
-      align-self: flex-start;
+    .hero-desc {
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.6;
+      margin-bottom: 40px;
     }
 
-    .subtitle {
-      font-size: 14px;
-      color: #636366;
-      margin-bottom: 44px;
-      align-self: flex-start;
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
     }
 
+    /* 心情网格 — 2列 */
     .mood-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
       width: 100%;
+      margin-bottom: 32px;
     }
 
     .mood-card {
       display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 18px 16px;
-      background: #1c1c1e;
-      border-radius: 16px;
+      flex-direction: column;
+      padding: 20px 16px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 18px;
       cursor: pointer;
       transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
-      min-height: 64px;
     }
 
-    .mood-card:active { transform: scale(0.96); background: #2a2a2d; }
-    .mood-card .emoji { font-size: 32px; flex-shrink: 0; transition: transform 0.25s; }
-    .mood-card:active .emoji { transform: scale(1.2); }
-    .mood-card .label { font-size: 14px; font-weight: 450; color: #d1d1d6; letter-spacing: 0.2px; }
+    .mood-card:active {
+      transform: scale(0.97);
+      background: #f5f5f5;
+      border-color: #ddd;
+    }
 
-    /* 思考动画 */
+    .mood-card .card-emoji {
+      font-size: 28px;
+      margin-bottom: 10px;
+      transition: transform 0.2s;
+    }
+
+    .mood-card:active .card-emoji {
+      transform: scale(1.15);
+    }
+
+    .mood-card .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .mood-card .card-sub {
+      font-size: 12px;
+      color: #999;
+      line-height: 1.4;
+    }
+
+    .footer-tagline {
+      text-align: center;
+      font-size: 12px;
+      color: #ccc;
+      letter-spacing: 0.5px;
+      padding-bottom: 28px;
+    }
+
+    /* ---- 思考动画 ---- */
     .thinking-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      position: fixed; inset: 0; background: rgba(250,250,248,0.95);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s;
     }
     .thinking-overlay.active { opacity: 1; pointer-events: auto; }
 
-    .dots { display: flex; gap: 8px; margin-bottom: 20px; }
+    .dots { display: flex; gap: 10px; margin-bottom: 24px; }
     .dots span {
-      width: 8px; height: 8px; background: #f5f5f7; border-radius: 50%;
+      width: 6px; height: 6px; background: #333; border-radius: 50%;
       animation: bounce 0.6s infinite alternate;
     }
     .dots span:nth-child(2) { animation-delay: 0.15s; }
     .dots span:nth-child(3) { animation-delay: 0.3s; }
 
     @keyframes bounce {
-      from { transform: translateY(0); opacity: 0.4; }
-      to   { transform: translateY(-14px); opacity: 1; }
+      from { transform: translateY(0); opacity: 0.3; }
+      to   { transform: translateY(-12px); opacity: 1; }
     }
 
-    .thinking-text { font-size: 14px; color: #8e8e93; letter-spacing: 0.5px; }
+    .thinking-text { font-size: 14px; color: #888; letter-spacing: 0.5px; }
 
-    /* 结果页 */
-    .result-page { padding-top: 18vh; text-align: center; }
+    /* ---- 结果页 ---- */
+    .result-page {
+      align-items: center;
+      text-align: center;
+      padding-top: 16vh;
+    }
 
     .result-badge {
-      font-size: 11px; font-weight: 500; color: #636366; letter-spacing: 1px; margin-bottom: 6px;
+      font-size: 11px; font-weight: 500; color: #999; letter-spacing: 1.5px; margin-bottom: 6px;
     }
-    .result-mood-tag { font-size: 14px; color: #8e8e93; margin-bottom: 28px; }
+    .result-mood-tag { font-size: 14px; color: #aaa; margin-bottom: 32px; }
 
     .result-emoji {
       font-size: 72px; margin-bottom: 14px;
@@ -138,32 +198,27 @@
     }
 
     .result-food {
-      font-size: 32px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 6px;
+      font-size: 32px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; color: #1a1a1a;
     }
     .result-price {
-      font-size: 13px; color: #e8a850; margin-bottom: 18px; letter-spacing: 0.3px;
+      font-size: 13px; color: #e8a850; margin-bottom: 20px;
     }
     .result-reason {
-      font-size: 13px; color: #98989e; line-height: 1.7; margin-bottom: 6px;
+      font-size: 13px; color: #888; line-height: 1.8; margin-bottom: 6px;
       max-width: 300px;
     }
     .result-tip {
-      font-size: 12px; color: #636366; margin-bottom: 40px;
+      font-size: 12px; color: #aaa; margin-bottom: 40px;
       font-style: italic;
     }
 
     .replay-btn {
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 12px 28px; background: #1c1c1e; border: none;
-      border-radius: 100px; color: #8e8e93; font-size: 14px;
+      padding: 12px 28px; background: #fff; border: 1px solid #ddd;
+      border-radius: 100px; color: #888; font-size: 14px;
       cursor: pointer; transition: all 0.25s; -webkit-tap-highlight-color: transparent;
     }
-    .replay-btn:active { background: #2a2a2d; color: #f5f5f7; }
-
-    footer {
-      margin-top: auto; padding: 24px 0 28px;
-      font-size: 11px; color: #3a3a3c; letter-spacing: 0.5px;
-    }
+    .replay-btn:active { background: #f0f0f0; color: #333; }
   </style>
 </head>
 <body>
@@ -177,37 +232,56 @@
   <!-- 选择页 -->
   <div class="page" id="selectPage">
     <div class="time-badge" id="greeting"></div>
-    <h1>今天吃什么</h1>
-    <p class="subtitle">此刻的你，是哪一种心情？</p>
+    <div class="title-line1">今天</div>
+    <div class="title-line2">吃什么</div>
+    <p class="hero-subtitle">此刻的你，想被哪一种味道照顾？</p>
+    <p class="hero-desc">让今天这一餐变得好决定。<br>按心情、状态或口味开始，AI 帮你收窄选择。</p>
 
+    <div class="section-label">选择入口</div>
     <div class="mood-grid">
       <div class="mood-card" data-mood="happy">
-        <span class="emoji">😊</span><span class="label">愉快</span>
+        <span class="card-emoji">😊</span>
+        <span class="card-title">愉快</span>
+        <span class="card-sub">奖励自己</span>
       </div>
       <div class="mood-card" data-mood="irritated">
-        <span class="emoji">😤</span><span class="label">烦躁</span>
+        <span class="card-emoji">😤</span>
+        <span class="card-title">烦躁</span>
+        <span class="card-sub">需要被安抚</span>
       </div>
       <div class="mood-card" data-mood="indulge">
-        <span class="emoji">🤤</span><span class="label">想吃爽的</span>
+        <span class="card-emoji">🤤</span>
+        <span class="card-title">想吃爽的</span>
+        <span class="card-sub">浓郁、满足、过瘾</span>
       </div>
       <div class="mood-card" data-mood="spicy">
-        <span class="emoji">🌶️</span><span class="label">想吃有味儿的</span>
+        <span class="card-emoji">🌶️</span>
+        <span class="card-title">想吃有味儿的</span>
+        <span class="card-sub">重口、香辣、浓郁</span>
       </div>
       <div class="mood-card" data-mood="tired">
-        <span class="emoji">😴</span><span class="label">疲惫</span>
+        <span class="card-emoji">😴</span>
+        <span class="card-title">疲惫</span>
+        <span class="card-sub">急需补充能量</span>
       </div>
       <div class="mood-card" data-mood="down">
-        <span class="emoji">😢</span><span class="label">低落</span>
+        <span class="card-emoji">😢</span>
+        <span class="card-title">低落</span>
+        <span class="card-sub">需要一点温暖</span>
       </div>
       <div class="mood-card" data-mood="chill">
-        <span class="emoji">🧘</span><span class="label">平静</span>
+        <span class="card-emoji">🧘</span>
+        <span class="card-title">平静</span>
+        <span class="card-sub">轻负担就好</span>
       </div>
       <div class="mood-card" data-mood="random">
-        <span class="emoji">🎲</span><span class="label">随便，帮我决定</span>
+        <span class="card-emoji">🎲</span>
+        <span class="card-title">随便</span>
+        <span class="card-sub">替我决定</span>
       </div>
     </div>
 
-    <footer>AI 懂你的胃，更懂你的心</footer>
+    <div class="footer-tagline">AI 懂你的胃，也懂你的心</div>
   </div>
 
   <!-- 结果页 -->
@@ -220,7 +294,6 @@
     <div class="result-reason" id="resultReason"></div>
     <div class="result-tip" id="resultTip"></div>
     <button class="replay-btn" id="replayBtn"><span>↻</span> 再来一次</button>
-    <footer>AI 懂你的胃，更懂你的心</footer>
   </div>
 
   <script>
@@ -332,10 +405,7 @@
     };
 
     const lastPicks = {};
-    const thinkingTexts = [
-      '正在分析你的状态…',
-      '匹配最佳推荐…',
-    ];
+    const thinkingTexts = ['正在分析你的状态…', '匹配最佳推荐…'];
 
     function pickFood(mood) {
       const pool = foodDB[mood].items;
@@ -378,8 +448,7 @@
     }
 
     async function showResult(mood) {
-      await showThinking(mood);
-
+      await showThinking();
       var moodData = foodDB[mood];
       var pick = pickFood(mood);
 
@@ -391,7 +460,6 @@
       document.getElementById('resultTip').textContent = '💡 ' + pick.tip;
 
       track('mood_select', { mood: mood, food: pick.food });
-
       selectPage.classList.add('hidden');
       resultPage.classList.remove('hidden');
     }

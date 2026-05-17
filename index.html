@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>今天吃什么</title>
-  <!-- 百度统计 -->
   <script>
   var _hmt = _hmt || [];
   (function() {
@@ -70,7 +69,6 @@
       align-self: flex-start;
     }
 
-    /* 情绪网格 — 2列 */
     .mood-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -92,52 +90,45 @@
       min-height: 64px;
     }
 
-    .mood-card:active {
-      transform: scale(0.96);
-      background: #2a2a2d;
+    .mood-card:active { transform: scale(0.96); background: #2a2a2d; }
+    .mood-card .emoji { font-size: 32px; flex-shrink: 0; transition: transform 0.25s; }
+    .mood-card:active .emoji { transform: scale(1.2); }
+    .mood-card .label { font-size: 14px; font-weight: 450; color: #d1d1d6; letter-spacing: 0.2px; }
+
+    /* 思考动画 */
+    .thinking-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .thinking-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .dots { display: flex; gap: 8px; margin-bottom: 20px; }
+    .dots span {
+      width: 8px; height: 8px; background: #f5f5f7; border-radius: 50%;
+      animation: bounce 0.6s infinite alternate;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.15s; }
+    .dots span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes bounce {
+      from { transform: translateY(0); opacity: 0.4; }
+      to   { transform: translateY(-14px); opacity: 1; }
     }
 
-    .mood-card .emoji {
-      font-size: 32px;
-      flex-shrink: 0;
-      transition: transform 0.25s;
-    }
-
-    .mood-card:active .emoji {
-      transform: scale(1.2);
-    }
-
-    .mood-card .label {
-      font-size: 14px;
-      font-weight: 450;
-      color: #d1d1d6;
-      letter-spacing: 0.2px;
-      line-height: 1.3;
-    }
+    .thinking-text { font-size: 14px; color: #8e8e93; letter-spacing: 0.5px; }
 
     /* 结果页 */
-    .result-page {
-      padding-top: 22vh;
-    }
+    .result-page { padding-top: 18vh; text-align: center; }
 
-    .result-from {
-      font-size: 12px;
-      font-weight: 500;
-      color: #636366;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
+    .result-badge {
+      font-size: 11px; font-weight: 500; color: #636366; letter-spacing: 1px; margin-bottom: 6px;
     }
-
-    .result-mood {
-      font-size: 15px;
-      color: #8e8e93;
-      margin-bottom: 32px;
-    }
+    .result-mood-tag { font-size: 14px; color: #8e8e93; margin-bottom: 28px; }
 
     .result-emoji {
-      font-size: 80px;
-      margin-bottom: 16px;
-      animation: popIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      font-size: 72px; margin-bottom: 14px;
+      animation: popIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     @keyframes popIn {
@@ -147,191 +138,205 @@
     }
 
     .result-food {
-      font-size: 34px;
-      font-weight: 600;
-      letter-spacing: -0.5px;
-      margin-bottom: 8px;
+      font-size: 32px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 6px;
     }
-
-    .result-tag {
-      font-size: 13px;
-      color: #636366;
-      margin-bottom: 44px;
+    .result-price {
+      font-size: 13px; color: #e8a850; margin-bottom: 18px; letter-spacing: 0.3px;
+    }
+    .result-reason {
+      font-size: 13px; color: #98989e; line-height: 1.7; margin-bottom: 6px;
+      max-width: 300px;
+    }
+    .result-tip {
+      font-size: 12px; color: #636366; margin-bottom: 40px;
+      font-style: italic;
     }
 
     .replay-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 28px;
-      background: #1c1c1e;
-      border: none;
-      border-radius: 100px;
-      color: #8e8e93;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.25s;
-      -webkit-tap-highlight-color: transparent;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 28px; background: #1c1c1e; border: none;
+      border-radius: 100px; color: #8e8e93; font-size: 14px;
+      cursor: pointer; transition: all 0.25s; -webkit-tap-highlight-color: transparent;
     }
-
-    .replay-btn:active {
-      background: #2a2a2d;
-      color: #f5f5f7;
-    }
+    .replay-btn:active { background: #2a2a2d; color: #f5f5f7; }
 
     footer {
-      margin-top: auto;
-      padding: 24px 0 28px;
-      font-size: 11px;
-      color: #3a3a3c;
-      letter-spacing: 0.5px;
+      margin-top: auto; padding: 24px 0 28px;
+      font-size: 11px; color: #3a3a3c; letter-spacing: 0.5px;
     }
   </style>
 </head>
 <body>
+
+  <!-- 思考动画 -->
+  <div class="thinking-overlay" id="thinkingOverlay">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="thinking-text" id="thinkingText">正在分析你的状态…</div>
+  </div>
+
   <!-- 选择页 -->
   <div class="page" id="selectPage">
     <div class="time-badge" id="greeting"></div>
     <h1>今天吃什么</h1>
     <p class="subtitle">此刻的你，是哪一种心情？</p>
 
-    <div class="mood-grid" id="moodGrid">
+    <div class="mood-grid">
       <div class="mood-card" data-mood="happy">
-        <span class="emoji">😊</span>
-        <span class="label">愉快</span>
+        <span class="emoji">😊</span><span class="label">愉快</span>
       </div>
       <div class="mood-card" data-mood="irritated">
-        <span class="emoji">😤</span>
-        <span class="label">烦躁</span>
+        <span class="emoji">😤</span><span class="label">烦躁</span>
       </div>
       <div class="mood-card" data-mood="indulge">
-        <span class="emoji">🤤</span>
-        <span class="label">想吃爽的</span>
+        <span class="emoji">🤤</span><span class="label">想吃爽的</span>
       </div>
       <div class="mood-card" data-mood="spicy">
-        <span class="emoji">🌶️</span>
-        <span class="label">想吃有味儿的</span>
+        <span class="emoji">🌶️</span><span class="label">想吃有味儿的</span>
       </div>
       <div class="mood-card" data-mood="tired">
-        <span class="emoji">😴</span>
-        <span class="label">疲惫</span>
+        <span class="emoji">😴</span><span class="label">疲惫</span>
       </div>
       <div class="mood-card" data-mood="down">
-        <span class="emoji">😢</span>
-        <span class="label">低落</span>
+        <span class="emoji">😢</span><span class="label">低落</span>
       </div>
       <div class="mood-card" data-mood="chill">
-        <span class="emoji">🧘</span>
-        <span class="label">平静</span>
+        <span class="emoji">🧘</span><span class="label">平静</span>
       </div>
       <div class="mood-card" data-mood="random">
-        <span class="emoji">🎲</span>
-        <span class="label">随便，帮我决定</span>
+        <span class="emoji">🎲</span><span class="label">随便，帮我决定</span>
       </div>
     </div>
 
-    <footer>eat what your mood tells you</footer>
+    <footer>AI 懂你的胃，更懂你的心</footer>
   </div>
 
   <!-- 结果页 -->
   <div class="page hidden result-page" id="resultPage">
-    <div class="result-from">YOUR PICK</div>
-    <div class="result-mood" id="resultMood"></div>
+    <div class="result-badge">AI 已分析</div>
+    <div class="result-mood-tag" id="moodTag"></div>
     <div class="result-emoji" id="resultEmoji"></div>
     <div class="result-food" id="resultFood"></div>
-    <div class="result-tag" id="resultTag"></div>
-    <button class="replay-btn" id="replayBtn">
-      <span>↻</span> 再来一次
-    </button>
-    <footer>eat what your mood tells you</footer>
+    <div class="result-price" id="resultPrice"></div>
+    <div class="result-reason" id="resultReason"></div>
+    <div class="result-tip" id="resultTip"></div>
+    <button class="replay-btn" id="replayBtn"><span>↻</span> 再来一次</button>
+    <footer>AI 懂你的胃，更懂你的心</footer>
   </div>
 
   <script>
     const foodDB = {
       happy: {
-        label: '心情愉快',
+        intro: '心情愉快时，味蕾也需要一场庆祝',
         items: [
-          { food: '早午餐拼盘', emoji: '🥞', tag: '今天值得庆祝' },
-          { food: '寿司拼盘', emoji: '🍣', tag: '好心情配好料' },
-          { food: '烤牛排', emoji: '🥩', tag: '犒劳一下自己' },
-          { food: '海鲜拼盘', emoji: '🦞', tag: '鲜甜正好' },
-          { food: '意大利面', emoji: '🍝', tag: '经典不会错' },
+          { food: '避风塘炒蟹', emoji: '🦀', price: '人均 120-200', reason: '金蒜酥脆裹着鲜甜蟹肉，蒜香焦脆与蟹的鲜甜在嘴里同时炸开。愉快的日子，值得一道有仪式感的港式经典。', tip: '配一碗白粥，蒜酥拌进去，香到舔碗' },
+          { food: '刺身拼盘', emoji: '🍣', price: '人均 80-180', reason: '新鲜的鱼生入口冰凉清甜，油脂在舌尖缓慢融化。好心情配好食材，每一片都是对味觉的犒赏。', tip: '从白身鱼开始吃，最后吃最肥的金枪鱼大腹' },
+          { food: '北京烤鸭', emoji: '🦆', price: '人均 80-150', reason: '枣红油亮的鸭皮蘸白糖入口即化，薄饼裹着鸭肉甜面酱黄瓜条。咬一口，幸福感不需要任何解释。', tip: '鸭架一定做椒盐，比鸭肉还好吃' },
+          { food: '花胶鸡煲', emoji: '🍲', price: '人均 120-200', reason: '金黄色的浓汤咕嘟咕嘟冒着泡，花胶软糯黏唇，鸡肉嫩滑。这一锅是广东人对「好日子」的定义。', tip: '先喝三碗汤，再涮菜，顺序不能乱' },
+          { food: '战斧牛排', emoji: '🥩', price: '人均 150-200', reason: '一刀切开，粉红色的切面冒着热气。焦脆外壳裹着软嫩内芯。今天是值得用一道战斧来配的好日子。', tip: '五分熟刚好，别怕见红' },
+          { food: '清蒸东星斑', emoji: '🐟', price: '人均 150-200', reason: '活鱼清蒸是对一条好鱼的最大尊重。鱼肉雪白滑嫩，筷子一夹轻轻散开，蘸一点蒸鱼豉油——鲜到不需要任何多余调味。', tip: '先吃鱼脸肉和鱼唇，最嫩最精华' },
+          { food: '蟹粉捞面', emoji: '🦀', price: '人均 60-120', reason: '手工拆的蟹黄蟹肉浇在热面上，金灿灿的油脂渗进每一根面条。这一碗是江南人对秋天最奢侈的想象。', tip: '趁热拌开，冷了就腥了' },
+          { food: '和牛寿喜烧', emoji: '🍲', price: '人均 120-200', reason: 'A5 和牛在铸铁锅里轻轻一涮，蘸上生蛋液滑进嘴里。油脂的甜和蛋液的柔，是一加一大于二的魔法。', tip: '肉涮 5 秒就够，别让它老在锅里' },
         ]
       },
       irritated: {
-        label: '有点烦躁',
+        intro: '烦躁需要出口，让食物替你出气',
         items: [
-          { food: '麻辣香锅', emoji: '🥘', tag: '辣完就爽了' },
-          { food: '炸鸡', emoji: '🍗', tag: '咬下去就解压' },
-          { food: '烧烤', emoji: '🍖', tag: '没有什么是一顿烧烤解决不了的' },
-          { food: '酸辣粉', emoji: '🌶️', tag: '酸辣出完汗就好了' },
-          { food: '汉堡薯条', emoji: '🍔', tag: '碳水炸弹治愈一切' },
+          { food: '麻辣香锅', emoji: '🥘', price: '人均 40-80', reason: '辣椒素会刺激大脑释放内啡肽——这是身体自带的止痛剂。选最辣的底料，让热汗把烦躁从毛孔里逼出去。', tip: '加两份毛肚，脆弹的口感是解压利器' },
+          { food: '手撕包菜', emoji: '🥬', price: '人均 30-60', reason: '大火爆炒的包菜边缘微焦，辣椒和花椒在锅里跳舞。一口咬下去，脆爽中带着火燎的锅气，咬碎包菜的那一刻，烦恼也跟着碎了。', tip: '配一碗白米饭，锅底的汁拌饭是隐藏菜单' },
+          { food: '椒盐皮皮虾', emoji: '🦐', price: '人均 60-120', reason: '外壳炸得酥脆，椒盐裹满每一寸。用手剥壳的专注会暂时忘记烦恼，而虾肉的鲜甜是剥壳后的奖赏。', tip: '别怕扎手，直接用牙齿咬开最爽' },
+          { food: '水煮牛肉', emoji: '🥩', price: '人均 50-90', reason: '滚烫的红油浇下去滋啦一声，辣椒和花椒的香气瞬间炸开。牛肉嫩得像豆腐，麻辣在舌尖跳动——你现在需要的正是这种强度的刺激。', tip: '底下的豆芽和莴笋才是吸收了所有精华的主角' },
+          { food: '酸辣粉', emoji: '🍜', price: '人均 15-30', reason: '红薯粉吸饱了酸辣汤汁，滑进嘴里的时候酸爽直冲天灵盖。一口粉一口花生，酥脆和弹滑交替，吃完出一身汗，整个人都轻了。', tip: '加一份肥肠，软糯配弹滑，双倍快乐' },
+          { food: '烧烤拼盘', emoji: '🍖', price: '人均 50-100', reason: '没有什么是一顿烧烤解决不了的，如果有，就两顿。炭火的焦香、孜然的野性、啤酒的气泡——这是人类最原始的治愈。', tip: '五花肉烤到微焦，油脂滴在炭上冒烟时最好吃' },
+          { food: '毛血旺', emoji: '🥘', price: '人均 40-70', reason: '鸭血嫩滑、毛肚脆弹、午餐肉入味，红油汤底里的花椒让嘴唇跳舞。这道重庆江湖菜的狂野，正好配你今天的烦躁值。', tip: '鸭血一定要先捞，煮久了会老' },
+          { food: '辣炒年糕', emoji: '🌶️', price: '人均 25-50', reason: '韩式辣酱裹着 Q 弹年糕，咬下去外软内韧，辣中带甜。不需要刀叉筷子，一口一个的节奏能让你在咀嚼中找到节律感。', tip: '加芝士，拉丝的那一刻什么烦恼都没了' },
         ]
       },
       indulge: {
-        label: '想吃爽的',
+        intro: '今天不需要克制，让食欲彻底释放',
         items: [
-          { food: '芝士汉堡', emoji: '🍔', tag: '热量算什么' },
-          { food: '烤五花肉', emoji: '🥩', tag: '包生菜一口闷' },
-          { food: '披萨', emoji: '🍕', tag: '双倍芝士拉丝' },
-          { food: '火锅', emoji: '🍲', tag: '毛肚黄喉全都要' },
-          { food: '部队锅', emoji: '🫕', tag: '拉面是灵魂' },
+          { food: '脆皮烧肉', emoji: '🥩', price: '人均 40-80', reason: '猪皮被烤成了玻璃脆壳，咬下去咔嚓一声，下面是化开的油脂和嫩肉。三层口感叠在一起，是广东烧腊的巅峰。', tip: '蘸白糖吃，咸甜交战的化学反应会上瘾' },
+          { food: '红烧肉', emoji: '🍖', price: '人均 40-70', reason: '五花肉在酱油和冰糖里炖了两小时，肥肉透明得像琥珀，瘦肉轻轻一夹就散。配一碗热白米饭，浇一勺肉汁——这是中国人最诚实的快乐。', tip: '一定要用五花三层，少一层都不够灵魂' },
+          { food: '芝士焗龙虾', emoji: '🦞', price: '人均 150-200', reason: '活龙虾开边铺上马苏里拉芝士焗到金黄拉丝。虾肉紧实弹牙，芝士浓郁咸香，一口下去两种满足感同时抵达。', tip: '虾钳肉最甜，别浪费在壳里' },
+          { food: '东坡肘子', emoji: '🍖', price: '人均 60-100', reason: '整只猪肘炖到皮糯肉烂，筷子一划就开。油脂的丰腴和酱油的咸香渗透到每一丝纤维里。今天就是要大口吃肉，克制是什么？', tip: '肘子皮是精华，不要因为怕肥而错过' },
+          { food: '鹅肝和牛汉堡', emoji: '🍔', price: '人均 80-150', reason: '和牛肉饼的汁水丰沛，鹅肝的绵密像黄油一样在舌尖化开。两层奢侈叠在一起，热量？今天不讨论这个话题。', tip: '用手拿着吃，刀叉是对它的不尊重' },
+          { food: '炸猪排咖喱', emoji: '🍛', price: '人均 40-80', reason: '厚切猪排外酥里嫩，一刀切下去能听到酥壳碎裂的声音。咖喱酱浓郁微辣裹满米饭，一勺下去碳水加肉的双重暴击。', tip: '猪排蘸一半咖喱一半猪排酱，两种快乐' },
+          { food: '铁板牛舌', emoji: '👅', price: '人均 80-150', reason: '厚切牛舌在滚烫铁板上滋滋作响，咬下去弹脆中带着奶香。这个部位是牛身上最被低估的宝藏。', tip: '挤一点柠檬汁，油脂感瞬间被提亮' },
+          { food: '烤全翅', emoji: '🍗', price: '人均 15-30', reason: '鸡翅在炭火上烤到表皮微焦冒油泡，孜然和辣椒面裹满。用手拿着啃，油脂顺着手指流——不优雅，但很爽。', tip: '翅尖烤到酥脆可以连骨嚼碎吃掉' },
         ]
       },
       spicy: {
-        label: '想吃有味儿的',
+        intro: '味蕾渴望被唤醒，来点刺激的',
         items: [
-          { food: '水煮鱼', emoji: '🐟', tag: '花椒的麻才够劲' },
-          { food: '螺蛳粉', emoji: '🍜', tag: '勇敢者的游戏' },
-          { food: '川菜小炒', emoji: '🌶️', tag: '锅气十足' },
-          { food: '泰式冬阴功', emoji: '🫕', tag: '酸辣开胃' },
-          { food: '麻辣烫', emoji: '🥘', tag: '自己选的最香' },
+          { food: '水煮鱼', emoji: '🐟', price: '人均 50-90', reason: '现杀的活鱼片在滚烫的红油里翻滚，花椒的麻和辣椒的辣在口腔里角逐。鱼片嫩到你怀疑它不是肉，而麻辣的余韵会在嘴唇上停留十分钟。', tip: '底下的豆芽和黄瓜条才是吸收了所有精华的宝藏' },
+          { food: '辣子鸡', emoji: '🐔', price: '人均 40-70', reason: '鸡块炸到外酥里嫩，在干辣椒堆里翻滚。重庆人管这叫「在辣椒里找鸡」，每一块找到的都是奖赏。', tip: '辣椒比鸡肉还香，不怕辣的可以嚼两颗' },
+          { food: '螺蛳粉', emoji: '🍜', price: '人均 15-30', reason: '酸笋的「臭」其实是发酵的鲜，配着螺蛳汤底的浓、腐竹的脆、花生的香。第一口可能皱眉，第三口就上瘾了。', tip: '加鸭脚和豆腐泡，吸饱汤汁的豆腐泡是隐藏主角' },
+          { food: '泰式冬阴功', emoji: '🫕', price: '人均 50-100', reason: '香茅、南姜、青柠、辣椒在椰奶汤底里碰撞，酸辣鲜甜四个维度同时攻击味蕾。大虾弹牙，蘑菇滑嫩，喝完第一口汤你会不自觉地「嗯」出声。', tip: '汤一定要喝到底，底下沉淀的是精华' },
+          { food: '剁椒鱼头', emoji: '🐟', price: '人均 60-120', reason: '鲜红的剁椒铺满整个鱼头，蒸出来的汁水和鱼脑髓混在一起。用筷子挑一块脸颊肉，鲜辣直冲脑门，然后是一阵悠长的鲜甜回甘。', tip: '吃完加一份面条拌进汁里，这碗面才是终极奥义' },
+          { food: '麻婆豆腐', emoji: '🧈', price: '人均 20-40', reason: '嫩豆腐在花椒面和豆瓣酱的红油里颤颤巍巍，一勺下去麻、辣、烫、嫩、酥、香六味同时抵达。陈麻婆的方子告诉你，川菜的灵魂不是辣，是麻。', tip: '必须用勺子吃，筷子夹不起来是对它的尊重' },
+          { food: '椒麻鸡', emoji: '🐔', price: '人均 30-60', reason: '白切鸡浇上青花椒油，鸡肉的凉和花椒的麻形成鲜明反差。花椒在舌头上跳针尖舞，鸡皮在齿间弹脆——这个是新疆最被低估的菜。', tip: '鸡皮和鸡肉之间的那层冻，是整道菜的精华' },
+          { food: '酸菜鱼', emoji: '🐟', price: '人均 50-90', reason: '老坛酸菜的乳酸发酵酸和鱼肉的鲜甜是天生一对。金黄色的汤底酸爽开胃，鱼片滑嫩得直接从喉咙溜下去。酸和辣的平衡拿捏得刚好。', tip: '酸菜一定要捞干净，比鱼还好吃' },
         ]
       },
       tired: {
-        label: '好疲惫',
+        intro: '疲惫时不需要思考，只需要一碗热汤',
         items: [
-          { food: '兰州拉面', emoji: '🍜', tag: '热汤回魂' },
-          { food: '咖喱饭', emoji: '🍛', tag: '大口吃满血复活' },
-          { food: '牛丼', emoji: '🍚', tag: '简单直接的能量' },
-          { food: '砂锅粥', emoji: '🥣', tag: '暖到胃里' },
-          { food: '蛋炒饭', emoji: '🍳', tag: '最朴素的慰藉' },
+          { food: '兰州牛肉面', emoji: '🍜', price: '人均 15-30', reason: '一清二白三红四绿五黄。牛骨熬的汤清亮见底却浓鲜无比，手工拉面在师傅手里甩了三圈，筋道弹牙。吸溜一口面，喝一大口汤，疲惫从胃开始融化。', tip: '加一份牛肉，店里的薄切三片是给你看的不是给你吃的' },
+          { food: '砂锅粥', emoji: '🥣', price: '人均 30-60', reason: '米粒在砂锅里被慢火熬到开花，虾蟹的鲜味渗透每一粒米。舀一勺吹三口，热乎乎滑进胃里。这不是食物，是液态的拥抱。', tip: '加一点白胡椒粉，鲜味翻倍' },
+          { food: '牛丼', emoji: '🍚', price: '人均 25-45', reason: '肥牛片在甜咸酱汁里煮到入味，卧在热白米饭上，酱汁渗进米粒间隙。一颗温泉蛋戳破，蛋液包裹着牛肉和米饭——五分钟吃完，满血复活。', tip: '蛋一定要戳破拌匀，这是灵魂动作' },
+          { food: '小馄饨', emoji: '🥟', price: '人均 10-25', reason: '薄如纸的皮裹着一小团肉，在紫菜虾皮汤里沉浮。咬破馄饨皮的瞬间，肉汁在舌尖炸开。一碗下肚，胃暖了，人也软了。', tip: '汤里加一勺香醋，鲜味突然立起来' },
+          { food: '蛋炒饭', emoji: '🍳', price: '人均 15-30', reason: '隔夜饭在滚烫的铁锅里跳舞，蛋液裹着每一粒米，葱花焦香四溢。这道最简单的料理，是疲惫时最不需要思考却最想吃的答案。', tip: '米饭一定要隔夜的，新鲜饭炒出来是坨的' },
+          { food: '萝卜牛腩煲', emoji: '🥩', price: '人均 40-70', reason: '牛腩炖到筷子一戳就散，白萝卜吸饱了牛肉汤汁变得透明。咬一口萝卜，汁水在嘴里爆开——它已经不是萝卜了。', tip: '萝卜比牛肉好吃，先把萝卜吃了再吃肉' },
+          { food: '日式拉面', emoji: '🍜', price: '人均 40-70', reason: '豚骨汤熬了十八个小时变成奶白色，溏心蛋的蛋黄缓缓流进汤里。叉烧肉在火枪下炙出焦香。吃完面把汤喝到底，是对这碗面最大的尊重。', tip: '面要硬一点，太软的面没有灵魂' },
+          { food: '咖喱猪排饭', emoji: '🍛', price: '人均 35-60', reason: '日式咖喱酱浓郁微甜，炸猪排的酥壳吸了咖喱变得柔软。大口扒饭的时候，碳水、油脂、香料同时奏效——这是针对疲惫的精准打击。', tip: '溏心蛋是标配，拌进咖喱里是另一个世界' },
         ]
       },
       down: {
-        label: '有点低落',
+        intro: '情绪低落时，甜是世界上最诚实的药',
         items: [
-          { food: '提拉米苏', emoji: '🍰', tag: '甜的能救命' },
-          { food: '冰淇淋', emoji: '🍦', tag: '大口吃' },
-          { food: '巧克力', emoji: '🍫', tag: '先吃再说' },
-          { food: '奶茶', emoji: '🧋', tag: '加珍珠加奶盖' },
-          { food: '拉面', emoji: '🍜', tag: '喝完汤就好了' },
+          { food: '提拉米苏', emoji: '🍰', price: '人均 25-45', reason: '马斯卡彭奶酪的绵密、浓缩咖啡的苦、可可粉的微涩——三层味道在舌尖层层递进。「提拉米苏」在意大利语里就是「拉我上去」。让它拉你一把。', tip: '一定要吃冰过的，常温的提拉米苏是另一个东西' },
+          { food: '熔岩巧克力蛋糕', emoji: '🍫', price: '人均 30-50', reason: '勺子挖下去，温热的巧克力岩浆缓缓流出。可可的苦和甜在口腔里缠绵。这一刻什么都不用想，只需要感受巧克力在舌尖融化。', tip: '配一球香草冰淇淋，冷热交战的快感会上瘾' },
+          { food: '红豆沙汤圆', emoji: '🍡', price: '人均 10-20', reason: '糯米皮软糯到黏在牙上，红豆沙细腻绵密地流淌。桂花糖水甜得不讲道理。小时候哭完奶奶会端一碗——它是童年的安全区。', tip: '咬一半让红豆沙流进汤里，汤会变成新的甜品' },
+          { food: '海盐芝士奶盖茶', emoji: '🧋', price: '人均 15-28', reason: '咸甜的芝士奶盖从杯口缓缓流入茶底，绵密的奶泡在嘴唇上留下白胡子。第一口是微咸，然后是茶的清爽——像有人在跟你说：没事的。', tip: '先不搅拌，喝一口奶盖再喝茶，层次感最好' },
+          { food: '焦糖布丁', emoji: '🍮', price: '人均 15-30', reason: '焦糖壳在勺尖碎裂发出清脆声响，下面是滑嫩到不像固体的布丁。蛋奶的香气温柔得像午后三点的阳光。', tip: '敲碎焦糖壳的声音本身就是一种治愈' },
+          { food: '榴莲千层', emoji: '🍰', price: '人均 35-60', reason: '猫山王榴莲肉在薄如蝉翼的班戟皮之间层层堆叠。入口即化，榴莲的浓郁会让你暂时忘记一切不愉快。', tip: '冷藏后再吃，冰凉的榴莲口感像冰淇淋' },
+          { food: '芋圆烧仙草', emoji: '🫘', price: '人均 15-25', reason: 'Q 弹的紫薯芋圆和滑嫩的烧仙草在红糖水里相遇，每一口都在嚼劲和顺滑之间切换。温热的红糖水会从舌尖一路暖到心里。', tip: '多加一份芋头块，粉糯的口感配 Q 弹芋圆是绝配' },
+          { food: '冰淇淋', emoji: '🍦', price: '人均 10-35', reason: '冰凉绵密的冰淇淋在舌尖融化，奶油的脂肪直接刺激多巴胺分泌。不需要理由，不需要克制，今天你只需要大口吃。', tip: '选开心果味，坚果的油脂香会让甜更有层次' },
         ]
       },
       chill: {
-        label: '心很平静',
+        intro: '心静时，食物也该是安静的陪伴',
         items: [
-          { food: '牛油果沙拉', emoji: '🥑', tag: '轻盈正好' },
-          { food: '清蒸鲈鱼', emoji: '🐟', tag: '鲜掉眉毛' },
-          { food: '白切鸡', emoji: '🐔', tag: '姜葱是灵魂' },
-          { food: '越南春卷', emoji: '🫔', tag: '蘸鱼露慢慢吃' },
-          { food: '味噌汤定食', emoji: '🍱', tag: '安静吃一顿' },
+          { food: '白切鸡', emoji: '🐔', price: '人均 40-80', reason: '水温和时间精确控制的产物。鸡皮金黄弹脆，鸡肉嫩而不柴，骨头带一点淡淡的粉红——这是火候的自信。蘸一点姜葱油，鲜味在口中轻柔展开。', tip: '姜葱蓉是灵魂，每家都有自己的比例，遇到好的记下来' },
+          { food: '清蒸鲈鱼', emoji: '🐟', price: '人均 50-90', reason: '活鱼蒸到刚刚断生，鱼肉雪白像蒜瓣一样层层分开。蒸鱼豉油的咸鲜和葱丝的清香是克制的——它不抢戏，只是让鱼的味道更清晰。', tip: '鱼眼旁边的肉最嫩，用勺子挖出来吃' },
+          { food: '莼菜羹', emoji: '🥬', price: '人均 30-60', reason: '莼菜外面裹着一层透明的胶质，滑进嘴里像在喝丝绸。虾仁和火腿丝只是点缀，主角是莼菜那种若有若无的鲜。这道菜的名字本身就带着湖水的气息。', tip: '不要加醋，莼菜本身的清鲜会被酸味盖住' },
+          { food: '豆腐花', emoji: '🥣', price: '人均 5-12', reason: '石磨磨的豆浆点成嫩如凝脂的豆花，浇上一点酱油和虾皮。豆香在嘴里慢慢散开，不着急，慢慢品。这是早餐摊上最安静的食物。', tip: '南方咸口的吃法才正宗，甜党可以绕路' },
+          { food: '茶泡饭', emoji: '🍵', price: '人均 20-40', reason: '热绿茶冲进冷饭里，米粒在茶汤中散开。配上一点梅子和海苔碎，朴素到没有存在感。但吃完你会觉得胃被温柔地照顾了。', tip: '茶不要太烫，70 度刚好，太烫的茶会让米饭发酸' },
+          { food: '清汤狮子头', emoji: '🥟', price: '人均 60-120', reason: '手工剁的猪肉颗粒分明，在清汤里炖了四个小时。用勺子舀起来颤颤巍巍，入口即化却还有细微的颗粒感。清汤见底，只有淡淡的肉香在飘。', tip: '先喝三口清汤，再吃狮子头，顺序不能错' },
+          { food: '上汤娃娃菜', emoji: '🥬', price: '人均 25-45', reason: '娃娃菜在高汤里煮到半透明，菜心还带着一丝清甜。高汤的鲜味渗进每一层叶子，但菜本身的味道还在——它没有被盖住，只是被托起来了。', tip: '汤里泡米饭，简单到奢侈' },
+          { food: '龙井虾仁', emoji: '🦐', price: '人均 60-120', reason: '手剥河虾仁在龙井茶的清香里滑炒，粉白如玉。虾仁弹脆鲜甜，茶香若有若无地浮在舌尖。这道杭州名菜的美，在于「刚好」。', tip: '趁热吃，凉了虾仁会出水，鲜味就跑了' },
         ]
       },
       random: {
-        label: '交给命运',
+        intro: '不想选，让 AI 替你决定',
         items: [
-          { food: '黄焖鸡', emoji: '🍚', tag: '国民第一选择' },
-          { food: '饺子', emoji: '🥟', tag: '好吃不过饺子' },
-          { food: '煎饼果子', emoji: '🫓', tag: '加蛋加薄脆' },
-          { food: '三杯鸡', emoji: '🐔', tag: '九层塔是灵魂' },
-          { food: '三明治', emoji: '🥪', tag: '简单满足' },
-          { food: 'biangbiang面', emoji: '🍝', tag: '油泼辣子滋啦一声' },
+          { food: '黄焖鸡米饭', emoji: '🍚', price: '人均 20-35', reason: '国民快餐之王。鸡腿肉焖到入味，土豆绵软，香菇吸满汤汁。一碗米饭浇上汤汁，简单粗暴的好吃。不需要思考的一餐。', tip: '汤汁浇饭是灵魂操作，一滴都别浪费' },
+          { food: '酸汤水饺', emoji: '🥟', price: '人均 15-30', reason: '手工饺子在红油酸汤里浮沉，咬破饺子皮的瞬间，肉汁和酸汤同时在嘴里爆开。酸辣开胃，你会发现自己不知不觉吃了三十个。', tip: '汤一定要喝，饺子吃完用勺子喝汤收尾' },
+          { food: '煲仔饭', emoji: '🍚', price: '人均 25-50', reason: '米饭在砂锅里和腊肠腊肉一起焖，锅底结出一层金黄锅巴。掀开盖子腊味的油脂香扑面而来，淋一勺酱油拌开——锅巴的焦脆和米饭的软糯交替出现。', tip: '先不淋酱油，尝一口原味的腊味饭，再决定加多少酱油' },
+          { food: 'biangbiang面', emoji: '🍝', price: '人均 15-30', reason: '裤带宽的面摔在案板上啪啪响，泼上滚烫的油辣子滋啦一声。面条筋道到咬不断，油泼辣子的香气和蒜蓉的辛辣同时在口腔爆开。', tip: '不搅拌更好吃，每一口都能吃到不同的层次' },
+          { food: '锅包肉', emoji: '🥩', price: '人均 30-60', reason: '猪里脊裹淀粉炸到金黄酥脆，酸甜汁裹满每一片。咬下去酥壳碎裂的声音在头骨里回荡，然后是肉的嫩和汁的酸甜。东北菜的终极诱惑。', tip: '趁热吃，放凉了酥壳会软，就变成了另一个菜' },
+          { food: '干炒牛河', emoji: '🍝', price: '人均 30-55', reason: '河粉在铁锅里被大火颠到边缘微焦，牛肉嫩滑，芽菜脆爽。锅气裹着每一根河粉，这是考验粤菜师傅功力的试金石。', tip: '加一点辣椒酱，但不是必须——好的干炒牛河不需要外援' },
+          { food: '葱油拌面', emoji: '🍜', price: '人均 8-18', reason: '热油浇在葱花上炸出焦香，拌进面条里。最简单的食材，最直接的好吃。三分钟吃完，碗底干干净净。', tip: '葱要炸到焦黄发黑，葱的苦味和油的甜味配在一起才是对的' },
+          { food: '三杯鸡', emoji: '🐔', price: '人均 40-70', reason: '一杯酱油一杯米酒一杯麻油，九层塔的香气是点睛之笔。鸡肉在砂锅里被三杯汁收干，每一块都黑亮入味。', tip: '九层塔最后放，放早了香味就跑光了' },
         ]
       }
     };
 
     const lastPicks = {};
+    const thinkingTexts = [
+      '正在分析你的情绪状态…',
+      '匹配味觉偏好中…',
+      '计算最佳推荐结果…',
+    ];
 
     function pickFood(mood) {
       const pool = foodDB[mood].items;
@@ -342,9 +347,6 @@
       return chosen;
     }
 
-    const selectPage = document.getElementById('selectPage');
-    const resultPage = document.getElementById('resultPage');
-
     function track(name, data) {
       if (window._hmt) {
         var label = typeof data === 'object' ? JSON.stringify(data) : (data || '');
@@ -352,16 +354,44 @@
       }
     }
 
-    function showResult(mood) {
-      const moodData = foodDB[mood];
-      const pick = pickFood(mood);
+    const selectPage = document.getElementById('selectPage');
+    const resultPage = document.getElementById('resultPage');
+    const thinkingOverlay = document.getElementById('thinkingOverlay');
+    const thinkingText = document.getElementById('thinkingText');
 
-      document.getElementById('resultMood').textContent = '/' + moodData.label;
+    function showThinking(mood) {
+      return new Promise(function(resolve) {
+        thinkingOverlay.classList.add('active');
+        var step = 0;
+        thinkingText.textContent = thinkingTexts[0];
+        var interval = setInterval(function() {
+          step++;
+          if (step < thinkingTexts.length) {
+            thinkingText.textContent = thinkingTexts[step];
+          }
+        }, 800);
+        setTimeout(function() {
+          clearInterval(interval);
+          thinkingOverlay.classList.remove('active');
+          resolve();
+        }, 2200);
+      });
+    }
+
+    async function showResult(mood) {
+      await showThinking(mood);
+
+      var moodData = foodDB[mood];
+      var pick = pickFood(mood);
+
+      document.getElementById('moodTag').textContent = '/' + moodData.intro;
       document.getElementById('resultEmoji').textContent = pick.emoji;
       document.getElementById('resultFood').textContent = pick.food;
-      document.getElementById('resultTag').textContent = pick.tag;
+      document.getElementById('resultPrice').textContent = pick.price;
+      document.getElementById('resultReason').textContent = pick.reason;
+      document.getElementById('resultTip').textContent = '💡 ' + pick.tip;
 
-      track('mood_select', { mood, food: pick.food });
+      track('mood_select', { mood: mood, food: pick.food });
 
       selectPage.classList.add('hidden');
       resultPage.classList.remove('hidden');
@@ -373,17 +403,17 @@
       selectPage.classList.remove('hidden');
     }
 
-    document.querySelectorAll('.mood-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const mood = card.dataset.mood;
+    document.querySelectorAll('.mood-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        var mood = card.dataset.mood;
         if (mood) showResult(mood);
       });
     });
 
     document.getElementById('replayBtn').addEventListener('click', backToSelect);
 
-    const hour = new Date().getHours();
-    const g = hour < 10 ? 'GOOD MORNING' : hour < 14 ? 'GOOD AFTERNOON' : hour < 18 ? 'GOOD EVENING' : 'GOOD NIGHT';
+    var hour = new Date().getHours();
+    var g = hour < 10 ? 'GOOD MORNING' : hour < 14 ? 'GOOD AFTERNOON' : hour < 18 ? 'GOOD EVENING' : 'GOOD NIGHT';
     document.getElementById('greeting').textContent = g;
 
     track('page_view', { time: new Date().toISOString() });

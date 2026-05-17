@@ -333,9 +333,8 @@
 
     const lastPicks = {};
     const thinkingTexts = [
-      '正在分析你的情绪状态…',
-      '匹配味觉偏好中…',
-      '计算最佳推荐结果…',
+      '正在分析你的状态…',
+      '匹配最佳推荐…',
     ];
 
     function pickFood(mood) {
@@ -359,7 +358,7 @@
     const thinkingOverlay = document.getElementById('thinkingOverlay');
     const thinkingText = document.getElementById('thinkingText');
 
-    function showThinking(mood) {
+    function showThinking() {
       return new Promise(function(resolve) {
         thinkingOverlay.classList.add('active');
         var step = 0;
@@ -369,12 +368,12 @@
           if (step < thinkingTexts.length) {
             thinkingText.textContent = thinkingTexts[step];
           }
-        }, 800);
+        }, 450);
         setTimeout(function() {
           clearInterval(interval);
           thinkingOverlay.classList.remove('active');
           resolve();
-        }, 2200);
+        }, 1000);
       });
     }
 

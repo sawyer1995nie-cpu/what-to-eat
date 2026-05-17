@@ -4,11 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>今天吃什么</title>
-  <!-- Vercel Analytics -->
+  <!-- 百度统计 -->
   <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?c89ce3d67c69eb4e0193facc4ee1d592";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
   </script>
-  <script defer src="/_vercel/insights/script.js"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -341,7 +346,10 @@
     const resultPage = document.getElementById('resultPage');
 
     function track(name, data) {
-      if (window.va) window.va('event', { name, data });
+      if (window._hmt) {
+        var label = typeof data === 'object' ? JSON.stringify(data) : (data || '');
+        _hmt.push(['_trackEvent', 'mood', name, label]);
+      }
     }
 
     function showResult(mood) {

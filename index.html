@@ -834,11 +834,11 @@
     setInterval(rotateAtmosphere, 4000);
 
     // ============ 预览区轮播 ============
-    let previewMood = 'tired'; // 当前预览食物所属情绪
+    let previewItem = null; // 当前预览的完整食物对象
     function updatePreview() {
       const allFoods = getAllFoods();
       const pick = allFoods[Math.floor(Math.random() * allFoods.length)];
-      previewMood = pick.mood;
+      previewItem = pick;
 
       previewInfo.classList.add('switching');
       setTimeout(() => {
@@ -851,10 +851,10 @@
     updatePreview();
     previewInterval = setInterval(updatePreview, 5000);
 
-    // 预览卡点击
+    // 预览卡点击：出这张卡上的菜，不随机换
     previewCard.addEventListener('click', () => {
-      if (isThinking) return;
-      showResult(previewMood);
+      if (isThinking || !previewItem) return;
+      showExactResult(previewItem);
     });
 
     // ============ 思考动画 ============
@@ -891,6 +891,36 @@
     }
 
     // ============ 结果展示 ============
+    // 预览卡专用：直接展示指定食物
+    async function showExactResult(item) {
+      if (isThinking) return;
+      isThinking = true;
+
+      await showThinking();
+
+      const moodData = foodDB[item.mood];
+
+      document.getElementById('resultMoodEmoji').textContent = item.moodEmoji;
+      document.getElementById('moodTag').textContent = '/ ' + moodData.intro;
+      document.getElementById('resultEmoji').textContent = item.emoji;
+      document.getElementById('resultFood').textContent = item.food;
+      document.getElementById('resultPrice').textContent = item.price;
+      document.getElementById('resultReason').textContent = item.reason;
+      document.getElementById('resultTip').textContent = '💡 ' + item.tip;
+
+      track('preview_click', { mood: item.mood, food: item.food });
+
+      selectPage.classList.add('hidden');
+      resultPage.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+
+      clearInterval(previewInterval);
+      updatePreview();
+      previewInterval = setInterval(updatePreview, 5000);
+
+      isThinking = false;
+    }
+
     async function showResult(mood) {
       if (isThinking) return;
       isThinking = true;

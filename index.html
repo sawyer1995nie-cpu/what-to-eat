@@ -50,9 +50,9 @@
       animation: orb-drift 15s ease-in-out infinite reverse;
     }
     @keyframes orb-drift {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(20px, -15px) scale(1.08); }
-      66% { transform: translate(-10px, 10px) scale(0.94); }
+      0%, 100% { transform: translateY(0) scale(1); }
+      33% { transform: translateY(-15px) scale(1.08); }
+      66% { transform: translateY(10px) scale(0.94); }
     }
 
     /* ========== 页面容器 ========== */
@@ -242,8 +242,8 @@
       animation: preview-emoji-float 2.5s ease-in-out infinite;
     }
     @keyframes preview-emoji-float {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-4px) rotate(3deg); }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
     }
 
     .preview-info {
@@ -285,7 +285,7 @@
     }
     .preview-card:active .preview-arrow {
       background: #e8d8c0;
-      transform: translateX(2px);
+      transform: scale(1.1);
     }
 
     /* ========== 四、情绪邀请卡 ========== */
@@ -448,9 +448,8 @@
       animation: cat-think 1.2s ease-in-out infinite;
     }
     @keyframes cat-think {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      25% { transform: translateY(-6px) rotate(-3deg); }
-      75% { transform: translateY(-2px) rotate(2deg); }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
 
     .thinking-dots {
@@ -913,6 +912,7 @@
 
       selectPage.classList.add('hidden');
       resultPage.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: "instant" });
 
       // 重回选择页时刷新预览
       clearInterval(previewInterval);
@@ -926,6 +926,7 @@
       track('replay_click');
       resultPage.classList.add('hidden');
       selectPage.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: "instant" });
       updatePreview();
       clearInterval(previewInterval);
       previewInterval = setInterval(updatePreview, 5000);

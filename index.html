@@ -822,6 +822,13 @@
       }
     }
 
+    function hapticTap(pattern) {
+      if (!navigator.vibrate) return;
+      // prefers-reduced-motion 作为「减少感官刺激」的最佳代理判断，因为尚无 prefers-reduced-haptics 标准
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      try { navigator.vibrate(pattern); } catch (e) { /* silent */ }
+    }
+
     // ============ 氛围轮播 ============
     function rotateAtmosphere() {
       atmosphereText.classList.add('fading');
@@ -854,6 +861,7 @@
     // 预览卡点击：出这张卡上的菜，不随机换
     previewCard.addEventListener('click', () => {
       if (isThinking || !previewItem) return;
+      hapticTap(10);
       showExactResult(previewItem);
     });
 
@@ -953,6 +961,7 @@
     }
 
     function backToSelect() {
+      hapticTap([8, 50, 8]);
       track('replay_click');
       resultPage.classList.add('hidden');
       selectPage.classList.remove('hidden');
@@ -968,6 +977,7 @@
         if (isThinking) return;
         const mood = card.dataset.mood;
         if (!mood) return;
+        hapticTap(10);
 
         // 扩散波纹
         const ripple = card.querySelector('.ripple-ring');
